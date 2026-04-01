@@ -1,6 +1,6 @@
-export async function getWeather() {
+export async function getWeather(city) {
   const response = await fetch(
-    "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/cegléd?unitGroup=us&key=KUP9JHYM5KSKHTEVC3M2HS87T",
+    `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=metric&key=KUP9JHYM5KSKHTEVC3M2HS87T`,
   );
   const data = await response.json();
 
@@ -15,9 +15,14 @@ export async function getWeather() {
     sunrise: data.currentConditions.sunrise,
     sunset: data.currentConditions.sunset,
     dew: data.currentConditions.dew,
-  };
 
-  console.log(data);
+    forecast: data.days.slice(1, 7).map((day) => ({
+      date: day.datetime,
+      icon: day.icon,
+      tempMax: day.tempmax,
+      tempMin: day.tempmin,
+    })),
+  };
 
   return weatherInfo;
 }
