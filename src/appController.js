@@ -8,24 +8,28 @@ export async function selectCity(city) {
   const normalizedCity = city.trim();
   if (!normalizedCity) return;
 
-  const cities = loadCities();
-  const alreadyExists = cities.some(
-    (savedCity) => savedCity.toLowerCase() === normalizedCity.toLowerCase(),
-  );
+  try {
+    const weatherData = await getWeather(normalizedCity);
 
-  if (!alreadyExists) {
-    saveCities([...cities, normalizedCity]);
+    const cities = loadCities();
+    const alreadyExists = cities.some(
+      (savedCity) => savedCity.toLowerCase() === normalizedCity.toLowerCase(),
+    );
+
+    if (!alreadyExists) {
+      saveCities([...cities, normalizedCity]);
+    }
+
+    saveCurrentCity(normalizedCity);
+    appState.currentCity = normalizedCity;
+    appState.currentScreen = "overview";
+    appState.weatherData = weatherData;
+
+    const app = document.querySelector("#weather");
+    app.textContent = "";
+    app.append(createWeatherLayout());
+    renderWeather(weatherData);
+  } catch (error) {
+    console.error("Failed to select city:", error);
   }
-
-  saveCurrentCity(normalizedCity);
-  appState.currentCity = normalizedCity;
-  appState.currentScreen = "overview";
-
-  const weatherData = await getWeather(normalizedCity);
-  appState.weatherData = weatherData;
-
-  const app = document.querySelector("#weather");
-  app.textContent = "";
-  app.append(createWeatherLayout());
-  renderWeather(weatherData);
 }

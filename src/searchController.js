@@ -7,22 +7,43 @@ let debounceTimer = null;
 async function handleGeolocation() {
   if (!navigator.geolocation) return;
 
-  navigator.geolocation.getCurrentPosition(async (position) => {
-    const { latitude, longitude } = position.coords;
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
 
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
-    );
-    const data = await response.json();
-    const city = data.address.city || data.address.town || data.address.village;
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`,
+        );
 
-    selectCity(city);
-  });
+        if (!response.ok) {
+          throw new Error("Failed to fetch location data.");
+        }
+
+        const data = await response.json();
+        const city =
+          data.address?.city || data.address?.town || data.address?.village;
+
+        if (!city) {
+          throw new Error("Could not determine city from location.");
+        }
+
+        selectCity(city);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    (error) => {
+      console.error("Geolocation error:", error);
+    },
+  );
 }
 
 export function initSearch() {
   const input = document.getElementById("search-input");
   const locationBtn = document.querySelector(".search-location-btn");
+
+  if (!input || !locationBtn) return;
 
   renderCityList(cities);
 
