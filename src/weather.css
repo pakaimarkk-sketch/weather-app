@@ -1,6 +1,6 @@
 #weather-app {
-  width: 320px;
-  height: 580px;
+  width: 100dvw;
+  height: 100dvh;
   overflow: hidden;
   position: relative;
 }
@@ -15,6 +15,10 @@
   width: 50%;
   height: 100%;
   background: steelblue;
+}
+
+.track {
+  touch-action: pan-y;
 }
 
 .panel-detail {
