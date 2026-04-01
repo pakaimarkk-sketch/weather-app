@@ -1,11 +1,15 @@
-export function initSwipe(track, panelWidth, dots = []) {
+export function initSwipe(track, dots = []) {
   let currentPanel = 0;
   let startX = 0;
   let dragX = 0;
   let isDragging = false;
 
+  function getPanelWidth() {
+    return track.parentElement.offsetWidth;
+  }
+
   function getBaseX() {
-    return -currentPanel * panelWidth;
+    return -currentPanel * getPanelWidth();
   }
 
   function updateDots(index) {
@@ -34,9 +38,12 @@ export function initSwipe(track, panelWidth, dots = []) {
     track.style.transform = `translateX(${getBaseX() + dragX}px)`;
   });
 
-  track.addEventListener("pointerup", () => {
+  track.addEventListener("pointerup", (e) => {
     if (!isDragging) return;
     isDragging = false;
+    track.releasePointerCapture(e.pointerId);
+
+    const panelWidth = getPanelWidth();
 
     if (dragX < -(panelWidth * 0.25) && currentPanel === 0) {
       snapTo(1);
@@ -47,9 +54,16 @@ export function initSwipe(track, panelWidth, dots = []) {
     }
   });
 
-  track.addEventListener("pointercancel", () => {
+  track.addEventListener("pointercancel", (e) => {
     if (!isDragging) return;
     isDragging = false;
+    track.releasePointerCapture(e.pointerId);
     snapTo(currentPanel);
   });
+
+  window.addEventListener("resize", () => {
+    snapTo(currentPanel);
+  });
+
+  snapTo(0);
 }
