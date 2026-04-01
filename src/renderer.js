@@ -2,7 +2,6 @@ import {
   createDiv,
   createTextElement,
   createTextDiv,
-  createInput,
 } from "../utils/domHelpers";
 
 export function renderWeather(weatherData) {
@@ -12,6 +11,8 @@ export function renderWeather(weatherData) {
   document.querySelector(".weather-temp").textContent = `${weatherData.temp}°`;
 
   const strip = document.querySelector(".forecast-strip");
+  strip.textContent = "";
+
   weatherData.forecast.forEach((day) => {
     const dayEl = createDiv(null, "forecast-day");
     const name = createTextElement(
@@ -43,6 +44,8 @@ export function renderWeather(weatherData) {
   ];
 
   const detailRows = document.querySelector(".detail-rows");
+  detailRows.textContent = "";
+
   rows.forEach(({ label, value }) => {
     const row = createDiv(null, "detail-row");
     const labelEl = createTextElement("p", label, null, "detail-label");

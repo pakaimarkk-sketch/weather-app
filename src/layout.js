@@ -30,15 +30,13 @@ export function createWeatherLayout() {
   const icon = createTextDiv("🌤️", null, "weather-icon");
 
   const header = createDiv(null, "overview-header");
-
   const forecast = createDiv(null, "forecast-strip");
-  panelOverview.append(header, main, forecast);
 
   header.append(date, city);
   main.append(icon, condition, temp);
+  panelOverview.append(header, main, forecast);
 
   const panelDetail = createDiv(null, "panel", "panel-detail");
-
   const detailHeader = createDiv(null, "detail-header");
   const detailDate = createTextElement(
     "p",
@@ -47,18 +45,14 @@ export function createWeatherLayout() {
     "header-date",
   );
   const detailCity = createTextElement("p", "—", null, "detail-city");
-
-  detailHeader.append(detailDate, detailCity);
-
   const detailRows = createDiv(null, "detail-rows");
 
+  detailHeader.append(detailDate, detailCity);
   panelDetail.append(detailHeader, detailRows);
 
   track.append(panelOverview, panelDetail);
-  app.append(track);
 
   const navBar = createDiv(null, "nav-bar");
-
   const addBtn = createButton("+", null, "nav-btn", "nav-add");
   const settingsBtn = createButton("⚙", null, "nav-btn", "nav-settings");
 
@@ -70,7 +64,7 @@ export function createWeatherLayout() {
   navBar.append(addBtn, dotIndicator, settingsBtn);
   app.append(track, navBar);
 
-  initSwipe(track, 320, [dot1, dot2]);
+  initSwipe(track, [dot1, dot2]);
 
   return app;
 }
