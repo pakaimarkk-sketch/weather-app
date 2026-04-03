@@ -22,7 +22,14 @@ async function init() {
   } else {
     app.append(createWeatherLayout());
     const weatherData = await getWeather(currentCity);
-    renderWeather(appState.weatherData, settingsController.settings);
+    appState.weatherData = weatherData;
+    appState.selectedDayIndex = 0;
+
+    renderWeather(
+      appState.weatherData,
+      settingsController.settings,
+      appState.selectedDayIndex,
+    );
     bindNavBar();
   }
 }

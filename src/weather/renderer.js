@@ -12,6 +12,8 @@ import {
 } from "../settings/settings";
 
 export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
+  if (!weatherData) return;
+
   const selectedDay = weatherData.details[selectedDayIndex];
 
   renderPreview(weatherData.current, weatherData.city, settings);
@@ -23,12 +25,18 @@ export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
 function renderPreview(current, city, settings) {
   document.querySelector(".header-city").textContent = city;
   document.querySelector(".weather-condition").textContent = current.conditions;
-  document.querySelector(".weather-description").textContent =
+  // document.querySelector(".weather-description").textContent =
+  document.querySelector(".weather-feelslike").textContent =
     `Feels like ${formatTemperature(current.feelslike, settings.tempUnit)}`;
   document.querySelector(".weather-temp").textContent = formatTemperature(
     current.temp,
     settings.tempUnit,
   );
+  document.querySelector(".weather-humidity").textContent =
+    `Humidity ${current.humidity}%`;
+
+  document.querySelector(".weather-windspeed").textContent =
+    `Wind ${formatWindSpeed(current.windspeed, settings.windspeedUnit)}`;
 }
 
 function renderForecast(forecast, settings, selectedDayIndex) {

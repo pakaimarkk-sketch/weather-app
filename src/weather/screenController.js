@@ -6,6 +6,8 @@ import {
   createWeatherLayout,
 } from "./layout";
 
+import { initSearch } from "./searchController";
+
 const views = {
   searchView: {
     create: () => createSearchLayout(),

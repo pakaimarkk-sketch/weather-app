@@ -23,13 +23,9 @@ export async function selectCity(city) {
 
     saveCurrentCity(normalizedCity);
     appState.currentCity = normalizedCity;
-    appState.currentScreen = "overview";
     appState.weatherData = weatherData;
 
-    const app = document.querySelector("#weather");
-    app.textContent = "";
-    app.append(createWeatherLayout());
-    renderWeather(appState.weatherData, settingsController.settings);
+    showView("weatherView");
   } catch (error) {
     console.error("Failed to select city:", error);
   }

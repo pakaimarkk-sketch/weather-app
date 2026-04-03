@@ -27,15 +27,18 @@ export function createWeatherLayout() {
   const city = createTextElement("p", "—", null, "header-city");
   const main = createDiv(null, "overview-main");
   const condition = createTextElement("p", "—", null, "weather-condition");
-  const description = createTextElement("p", "—", null, "weather-description");
+  // const description = createTextElement("p", "—", null, "weather-description");
   const temp = createTextElement("p", "—°", null, "weather-temp");
   const icon = createTextDiv("🌤️", null, "weather-icon");
+  const feelsLike = createTextElement("p", "—", null, "weather-feelslike");
+  const humidity = createTextElement("p", "—", null, "weather-humidity");
+  const windspeed = createTextElement("p", "—", null, "weather-windspeed");
 
   const header = createDiv(null, "overview-header");
   const forecast = createDiv(null, "forecast-strip");
 
   header.append(date, city);
-  main.append(icon, condition, description, temp);
+  main.append(icon, condition, temp, humidity, windspeed, feelsLike);
   panelOverview.append(header, main, forecast);
 
   const panelDetail = createDiv(null, "panel", "panel-detail");
@@ -56,6 +59,7 @@ export function createWeatherLayout() {
 
   const navBar = createDiv(null, "nav-bar");
   const addBtn = createButton("+", "navAdd", "nav-btn", "nav-add");
+  addBtn.dataset.target = "searchView";
   const dotIndicator = createDiv(null, "dot-indicator");
   const dot1 = createDiv(null, "dot", "active");
   const dot2 = createDiv(null, "dot");
@@ -171,6 +175,7 @@ export function createSettingsLayout() {
 
   const navBar = createDiv(null, "nav-bar");
   const addBtn = createButton("+", "navAdd", "nav-btn", "nav-add");
+  addBtn.dataset.target = "searchView";
   const weatherBtn = createButton("☀", "goWeather", "nav-btn", "nav-weather");
   weatherBtn.dataset.target = "weatherView";
   navBar.append(addBtn, weatherBtn);
