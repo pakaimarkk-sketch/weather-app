@@ -1,0 +1,158 @@
+import {
+  createDiv,
+  createTextElement,
+  createTextDiv,
+} from "../../utils/domHelpers";
+
+import {
+  formatTemperature,
+  formatWindSpeed,
+  formatPressure,
+  formatTime,
+} from "../settings/settings";
+
+export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
+  const selectedDay = weatherData.details[selectedDayIndex];
+
+  renderPreview(weatherData.current, weatherData.city, settings);
+  renderForecast(weatherData.forecast, settings, selectedDayIndex);
+  renderDetails(selectedDay, weatherData.city, settings);
+  toggleTodayButton(selectedDayIndex);
+}
+
+function renderPreview(current, city, settings) {
+  document.querySelector(".header-city").textContent = city;
+  document.querySelector(".weather-condition").textContent = current.conditions;
+  document.querySelector(".weather-description").textContent =
+    `Feels like ${formatTemperature(current.feelslike, settings.tempUnit)}`;
+  document.querySelector(".weather-temp").textContent = formatTemperature(
+    current.temp,
+    settings.tempUnit,
+  );
+}
+
+function renderForecast(forecast, settings, selectedDayIndex) {
+  const strip = document.querySelector(".forecast-strip");
+  strip.textContent = "";
+
+  forecast.forEach((day, forecastIndex) => {
+    const detailIndex = forecastIndex + 1;
+
+    const dayEl = createDiv(null, "forecast-day");
+    if (detailIndex === selectedDayIndex) {
+      dayEl.classList.add("active");
+    }
+
+    dayEl.dataset.index = detailIndex;
+
+    const name = createTextElement(
+      "p",
+      getDayName(day.datetime),
+      null,
+      "forecast-day-name",
+    );
+
+    const icon = createTextDiv("🌤️", null, "forecast-day-icon");
+
+    const temp = createTextElement(
+      "p",
+      `${formatTemperature(day.tempmin, settings.tempUnit)} / ${formatTemperature(day.tempmax, settings.tempUnit)}`,
+      null,
+      "forecast-day-temp",
+    );
+
+    const precip = createTextElement(
+      "p",
+      `${day.precipprob ?? 0}%`,
+      null,
+      "forecast-day-precip",
+    );
+
+    dayEl.append(name, icon, temp, precip);
+    strip.append(dayEl);
+  });
+}
+
+function renderDetails(day, city, settings) {
+  document.querySelector(".detail-city").textContent = city;
+  document.querySelector(".header-date").textContent = formatHeaderDate(
+    day.datetime,
+  );
+
+  const rows = [
+    {
+      label: "Temperature",
+      value: formatTemperature(day.temp, settings.tempUnit),
+    },
+    {
+      label: "Feels like",
+      value: formatTemperature(day.feelslike, settings.tempUnit),
+    },
+    {
+      label: "Feels like min",
+      value: formatTemperature(day.feelslikemin, settings.tempUnit),
+    },
+    {
+      label: "Feels like max",
+      value: formatTemperature(day.feelslikemax, settings.tempUnit),
+    },
+    {
+      label: "Humidity",
+      value: `${day.humidity}%`,
+    },
+    {
+      label: "Wind",
+      value: formatWindSpeed(day.windspeed, settings.windspeedUnit),
+    },
+    {
+      label: "Pressure",
+      value: formatPressure(day.pressure, settings.pressureUnit),
+    },
+    {
+      label: "Sunrise",
+      value: formatTime(day.sunrise, settings.timeFormat),
+    },
+    {
+      label: "Sunset",
+      value: formatTime(day.sunset, settings.timeFormat),
+    },
+    {
+      label: "Rain chance",
+      value: `${day.precipprob ?? 0}%`,
+    },
+    {
+      label: "Description",
+      value: day.description,
+    },
+  ];
+
+  const detailRows = document.querySelector(".detail-rows");
+  detailRows.textContent = "";
+
+  rows.forEach(({ label, value }) => {
+    const row = createDiv(null, "detail-row");
+    const labelEl = createTextElement("p", label, null, "detail-label");
+    const valueEl = createTextElement("p", value, null, "detail-value");
+    row.append(labelEl, valueEl);
+    detailRows.append(row);
+  });
+}
+
+function toggleTodayButton(selectedDayIndex) {
+  const todayBtn = document.getElementById("goToday");
+  if (!todayBtn) return;
+
+  todayBtn.style.display = selectedDayIndex === 0 ? "none" : "inline-flex";
+}
+
+function getDayName(dateString) {
+  return new Date(dateString).toLocaleDateString("en-US", { weekday: "short" });
+}
+
+function formatHeaderDate(dateString) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
