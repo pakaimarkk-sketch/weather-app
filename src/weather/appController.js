@@ -1,5 +1,6 @@
 import { appState } from "./state";
-import { loadCities, saveCities, saveCurrentCity } from "./storage";
+import settingsController from "../settings/settingsController";
+import { loadCities, saveCities, saveCurrentCity } from "../storage";
 import { getWeather } from "./api";
 import { createWeatherLayout } from "./layout";
 import { renderWeather } from "./renderer";
@@ -28,7 +29,7 @@ export async function selectCity(city) {
     const app = document.querySelector("#weather");
     app.textContent = "";
     app.append(createWeatherLayout());
-    renderWeather(weatherData);
+    renderWeather(appState.weatherData, settingsController.settings);
   } catch (error) {
     console.error("Failed to select city:", error);
   }
