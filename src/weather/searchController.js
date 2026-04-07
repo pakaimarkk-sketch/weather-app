@@ -49,11 +49,21 @@ export function initSearch() {
 
   input.addEventListener("input", (e) => {
     clearTimeout(debounceTimer);
+
     debounceTimer = setTimeout(() => {
-      const query = e.target.value;
+      const query = e.target.value.trim();
       const filtered = searchCities(query, cities);
       renderCityList(filtered, query);
     }, 150);
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+
+    const query = input.value.trim();
+    if (!query) return;
+
+    selectCity(query);
   });
 
   locationBtn.addEventListener("click", handleGeolocation);
