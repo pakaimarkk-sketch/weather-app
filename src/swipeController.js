@@ -1,5 +1,7 @@
-export function initSwipe(track, dots = []) {
-  let currentPanel = 0;
+export function initSwipe(track, dots = [], options = {}) {
+  const { initialPanel = 0, onPanelChange = () => {} } = options;
+
+  let currentPanel = initialPanel;
   let startX = 0;
   let dragX = 0;
   let isDragging = false;
@@ -8,8 +10,8 @@ export function initSwipe(track, dots = []) {
     return track.parentElement.offsetWidth;
   }
 
-  function getBaseX() {
-    return -currentPanel * getPanelWidth();
+  function getBaseX(panelIndex = currentPanel) {
+    return -panelIndex * getPanelWidth();
   }
 
   function updateDots(index) {
@@ -22,6 +24,7 @@ export function initSwipe(track, dots = []) {
       "transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
     track.style.transform = `translateX(${getBaseX()}px)`;
     updateDots(currentPanel);
+    onPanelChange(currentPanel);
   }
 
   track.addEventListener("pointerdown", (e) => {
@@ -65,5 +68,20 @@ export function initSwipe(track, dots = []) {
     snapTo(currentPanel);
   });
 
-  snapTo(0);
+  snapTo(initialPanel);
+
+  return {
+    goTo(panelIndex) {
+      snapTo(panelIndex);
+    },
+    next() {
+      if (currentPanel < 1) snapTo(currentPanel + 1);
+    },
+    prev() {
+      if (currentPanel > 0) snapTo(currentPanel - 1);
+    },
+    getCurrentPanel() {
+      return currentPanel;
+    },
+  };
 }
