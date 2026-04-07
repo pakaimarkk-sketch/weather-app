@@ -18,19 +18,17 @@ export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
 
   const forecast = weatherData.details;
   const selectedDay = weatherData.details[selectedDayIndex];
+  const isToday = selectedDayIndex === 0;
 
   renderPreview(weatherData.current, weatherData.city, settings);
   renderForecast(forecast, settings, selectedDayIndex);
+  renderHourlyForecast(selectedDay.hours, settings, isToday);
   renderDetails(selectedDay, weatherData.city, settings);
-  renderHourlyForecast(selectedDay.hours, settings);
 }
 
 function renderPreview(current, city, settings) {
   document.querySelector(".header-city").textContent = city;
   document.querySelector(".weather-condition").textContent = current.conditions;
-  // document.querySelector(".weather-description").textContent =
-  // document.querySelector(".weather-feelslike").textContent =
-  // `Feels like ${formatTemperature(current.feelslike, settings.tempUnit)}`;
   document.querySelector(".weather-temp").textContent = formatTemperature(
     current.temp,
     settings.tempUnit,
@@ -86,7 +84,7 @@ function renderForecast(forecast, settings, selectedDayIndex) {
 
 function renderDetails(day, city, settings) {
   document.querySelector(".detail-city").textContent = city;
-  document.querySelector(".header-date").textContent = formatHeaderDate(
+  document.querySelector(".detail-date").textContent = formatHeaderDate(
     day.datetime,
   );
 
@@ -161,13 +159,16 @@ function formatHeaderDate(dateString) {
   });
 }
 
-function renderHourlyForecast(hours = [], settings) {
+function renderHourlyForecast(hours = [], settings, shouldAutoScroll = false) {
   const strip = document.querySelector(".hourly-forecast-strip");
   if (!strip) return;
 
   strip.textContent = "";
 
-  const filteredHours = hours.filter((_, index) => index % 2 === 0);
+  const filteredHours = hours.filter((hour) => {
+    const hourValue = Number(hour.datetime.split(":")[0]);
+    return hourValue % 2 === 0;
+  });
 
   filteredHours.forEach((hour) => {
     const hourEl = createDiv(null, "hourly-forecast-item");
@@ -211,5 +212,36 @@ function renderHourlyForecast(hours = [], settings) {
 
     hourEl.append(time, icon, temp, humidity, wind, precip);
     strip.append(hourEl);
+  });
+
+  if (shouldAutoScroll) {
+    scrollHourlyStripToCurrentTime(strip, filteredHours);
+  } else {
+    strip.scrollLeft = 0;
+  }
+}
+
+function scrollHourlyStripToCurrentTime(strip, hours) {
+  const currentHour = new Date().getHours();
+  const snappedHour = currentHour - (currentHour % 2);
+
+  const foundIndex = hours.findIndex(
+    (hour) => Number(hour.datetime.split(":")[0]) === snappedHour,
+  );
+
+  const targetIndex = Math.max(0, foundIndex - 4);
+
+  const items = strip.querySelectorAll(".hourly-forecast-item");
+  const targetItem = items[targetIndex];
+
+  if (!targetItem) return;
+
+  strip.scrollLeft = targetItem.offsetLeft;
+  console.log({
+    currentHour,
+    snappedHour,
+    renderedHours: hours.map((h) => h.datetime),
+    foundIndex,
+    targetIndex,
   });
 }

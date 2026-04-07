@@ -32,9 +32,17 @@ function normalizeWeatherData(data) {
       sunrise: day.sunrise,
       sunset: day.sunset,
       precipprob: day.precipprob,
+      hours: day.hours.map((hour) => ({
+        datetime: hour.datetime,
+        temp: hour.temp,
+        humidity: hour.humidity,
+        windspeed: hour.windspeed,
+        icon: hour.icon,
+        precipprob: hour.precipprob,
+      })),
     })),
 
-    forecast: data.days.slice(1, 15).map((day) => ({
+    forecast: data.days.slice(0, 15).map((day) => ({
       datetime: day.datetime,
       icon: day.icon,
       tempmax: day.tempmax,

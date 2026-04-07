@@ -49,7 +49,7 @@ export function createWeatherLayout() {
     "p",
     getFormattedDate(),
     null,
-    "header-date",
+    "detail-date",
   );
   const detailCity = createTextElement("p", "—", null, "detail-city");
   const hourlyForecast = createDiv(null, "hourly-forecast-strip");
