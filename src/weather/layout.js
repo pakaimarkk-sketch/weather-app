@@ -9,6 +9,8 @@ import {
   createInput,
 } from "../../utils/domHelpers";
 import { initSwipe } from "../swipeController";
+import { appState } from "./state";
+import settingsController from "../settings/settingsController";
 
 function getFormattedDate() {
   return new Date().toLocaleDateString("en-US", {
@@ -30,7 +32,7 @@ export function createWeatherLayout() {
   // const description = createTextElement("p", "—", null, "weather-description");
   const temp = createTextElement("p", "—°", null, "weather-temp");
   const icon = createTextDiv("🌤️", null, "weather-icon");
-  const feelsLike = createTextElement("p", "—", null, "weather-feelslike");
+  // const feelsLike = createTextElement("p", "—", null, "weather-feelslike");
   const humidity = createTextElement("p", "—", null, "weather-humidity");
   const windspeed = createTextElement("p", "—", null, "weather-windspeed");
 
@@ -38,7 +40,7 @@ export function createWeatherLayout() {
   const forecast = createDiv(null, "forecast-strip");
 
   header.append(date, city);
-  main.append(icon, condition, temp, humidity, windspeed, feelsLike);
+  main.append(icon, condition, temp, humidity, windspeed);
   panelOverview.append(header, main, forecast);
 
   const panelDetail = createDiv(null, "panel", "panel-detail");
@@ -50,10 +52,11 @@ export function createWeatherLayout() {
     "header-date",
   );
   const detailCity = createTextElement("p", "—", null, "detail-city");
+  const hourlyForecast = createDiv(null, "hourly-forecast-strip");
   const detailRows = createDiv(null, "detail-rows");
 
   detailHeader.append(detailDate, detailCity);
-  panelDetail.append(detailHeader, detailRows);
+  panelDetail.append(detailHeader, detailRows, hourlyForecast);
 
   track.append(panelOverview, panelDetail);
 
@@ -74,7 +77,12 @@ export function createWeatherLayout() {
   navBar.append(addBtn, dotIndicator, settingsBtn);
 
   app.append(track, navBar);
-  initSwipe(track, [dot1, dot2]);
+  appState.swipeController = initSwipe(track, [dot1, dot2], {
+    initialPanel: appState.currentWeatherPanel,
+    onPanelChange: (panelIndex) => {
+      appState.currentWeatherPanel = panelIndex;
+    },
+  });
 
   return app;
 }
@@ -106,6 +114,8 @@ export function createSearchLayout() {
 export function createSettingsLayout() {
   const app = createDiv("settingsView");
 
+  const settings = settingsController.getSettings();
+
   const header = createDiv(null, "screen-header");
   const title = createTextElement("h1", "Settings", null, "screen-title");
   const subtitle = createTextElement(
@@ -123,34 +133,37 @@ export function createSettingsLayout() {
       createSegmentedControl(
         "temperature-unit",
         [
-          { label: "°C", value: "c" },
-          { label: "°F", value: "f" },
+          { label: "°C", value: "°C" },
+          { label: "°F", value: "°F" },
         ],
-        "c",
+        settings.tempUnit,
       ),
     ]),
+
     createSettingsGroup("Wind Speed", [
       createSegmentedControl(
         "wind-unit",
         [
-          { label: "km/h", value: "kmh" },
-          { label: "m/s", value: "ms" },
+          { label: "km/h", value: "km/h" },
+          { label: "m/s", value: "m/s" },
           { label: "mph", value: "mph" },
         ],
-        "kmh",
+        settings.windspeedUnit,
       ),
     ]),
+
     createSettingsGroup("Pressure", [
       createSegmentedControl(
         "pressure-unit",
         [
           { label: "mb", value: "mb" },
           { label: "hPa", value: "hPa" },
-          { label: "mm", value: "mmHg" },
+          { label: "mm", value: "mm" },
         ],
-        "hPa",
+        settings.pressureUnit,
       ),
     ]),
+
     createSettingsGroup("Time Format", [
       createSegmentedControl(
         "time-format",
@@ -158,17 +171,18 @@ export function createSettingsLayout() {
           { label: "24h", value: "24h" },
           { label: "12h", value: "12h" },
         ],
-        "24h",
+        settings.timeFormat,
       ),
     ]),
+
     createSettingsGroup("Appearance", [
       createSegmentedControl(
         "theme-mode",
         [
-          { label: "Light", value: "light" },
-          { label: "Dark", value: "dark" },
+          { label: "Light", value: "Light" },
+          { label: "Dark", value: "Dark" },
         ],
-        "dark",
+        settings.appearance,
       ),
     ]),
   );

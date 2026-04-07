@@ -4,6 +4,8 @@ import {
   createTextDiv,
 } from "../../utils/domHelpers";
 
+import { formatHour } from "../../utils/utils";
+
 import {
   formatTemperature,
   formatWindSpeed,
@@ -14,20 +16,21 @@ import {
 export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
   if (!weatherData) return;
 
+  const forecast = weatherData.details;
   const selectedDay = weatherData.details[selectedDayIndex];
 
   renderPreview(weatherData.current, weatherData.city, settings);
-  renderForecast(weatherData.forecast, settings, selectedDayIndex);
+  renderForecast(forecast, settings, selectedDayIndex);
   renderDetails(selectedDay, weatherData.city, settings);
-  toggleTodayButton(selectedDayIndex);
+  renderHourlyForecast(selectedDay.hours, settings);
 }
 
 function renderPreview(current, city, settings) {
   document.querySelector(".header-city").textContent = city;
   document.querySelector(".weather-condition").textContent = current.conditions;
   // document.querySelector(".weather-description").textContent =
-  document.querySelector(".weather-feelslike").textContent =
-    `Feels like ${formatTemperature(current.feelslike, settings.tempUnit)}`;
+  // document.querySelector(".weather-feelslike").textContent =
+  // `Feels like ${formatTemperature(current.feelslike, settings.tempUnit)}`;
   document.querySelector(".weather-temp").textContent = formatTemperature(
     current.temp,
     settings.tempUnit,
@@ -44,7 +47,7 @@ function renderForecast(forecast, settings, selectedDayIndex) {
   strip.textContent = "";
 
   forecast.forEach((day, forecastIndex) => {
-    const detailIndex = forecastIndex + 1;
+    const detailIndex = forecastIndex;
 
     const dayEl = createDiv(null, "forecast-day");
     if (detailIndex === selectedDayIndex) {
@@ -146,13 +149,6 @@ function renderDetails(day, city, settings) {
   });
 }
 
-function toggleTodayButton(selectedDayIndex) {
-  const todayBtn = document.getElementById("goToday");
-  if (!todayBtn) return;
-
-  todayBtn.style.display = selectedDayIndex === 0 ? "none" : "inline-flex";
-}
-
 function getDayName(dateString) {
   return new Date(dateString).toLocaleDateString("en-US", { weekday: "short" });
 }
@@ -162,5 +158,58 @@ function formatHeaderDate(dateString) {
     weekday: "long",
     month: "long",
     day: "numeric",
+  });
+}
+
+function renderHourlyForecast(hours = [], settings) {
+  const strip = document.querySelector(".hourly-forecast-strip");
+  if (!strip) return;
+
+  strip.textContent = "";
+
+  const filteredHours = hours.filter((_, index) => index % 2 === 0);
+
+  filteredHours.forEach((hour) => {
+    const hourEl = createDiv(null, "hourly-forecast-item");
+
+    const time = createTextElement(
+      "p",
+      formatHour(hour.datetime, settings.timeFormat),
+      null,
+      "hourly-time",
+    );
+
+    const icon = createTextDiv("🌤️", null, "hourly-icon");
+
+    const temp = createTextElement(
+      "p",
+      formatTemperature(hour.temp, settings.tempUnit),
+      null,
+      "hourly-temp",
+    );
+
+    const humidity = createTextElement(
+      "p",
+      `${hour.humidity}%`,
+      null,
+      "hourly-humidity",
+    );
+
+    const wind = createTextElement(
+      "p",
+      formatWindSpeed(hour.windspeed, settings.windspeedUnit),
+      null,
+      "hourly-wind",
+    );
+
+    const precip = createTextElement(
+      "p",
+      `${hour.precipprob ?? 0}%`,
+      null,
+      "hourly-precip",
+    );
+
+    hourEl.append(time, icon, temp, humidity, wind, precip);
+    strip.append(hourEl);
   });
 }
