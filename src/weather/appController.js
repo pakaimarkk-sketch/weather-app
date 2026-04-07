@@ -1,9 +1,7 @@
 import { appState } from "./state";
-import settingsController from "../settings/settingsController";
 import { loadCities, saveCities, saveCurrentCity } from "../storage";
 import { getWeather } from "./api";
-import { createWeatherLayout } from "./layout";
-import { renderWeather } from "./renderer";
+import { showView } from "./screenController";
 
 export async function selectCity(city) {
   const normalizedCity = city.trim();
@@ -24,6 +22,8 @@ export async function selectCity(city) {
     saveCurrentCity(normalizedCity);
     appState.currentCity = normalizedCity;
     appState.weatherData = weatherData;
+    appState.selectedDayIndex = 0;
+    appState.currentWeatherPanel = 0;
 
     showView("weatherView");
   } catch (error) {

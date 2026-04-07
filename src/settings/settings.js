@@ -40,22 +40,18 @@ export function formatPressure(value, unit) {
   }
 }
 
-export function formatTime(dateInput, format) {
-  const date = dateInput instanceof Date ? dateInput : new Date(dateInput);
+export function formatTime(timeString, format = "24h") {
+  const trimmed = timeString.slice(0, 5);
+  const [hoursStr, minutes] = trimmed.split(":");
+  const hours = Number(hoursStr);
 
   if (format === "12h") {
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const hour12 = hours % 12 || 12;
+    return `${hour12}:${minutes} ${suffix}`;
   }
 
-  return date.toLocaleTimeString("en-GB", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
+  return trimmed;
 }
 
 export function applyTheme(theme) {

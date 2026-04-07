@@ -22,7 +22,7 @@ class SettingsController {
   applySettings() {
     applyTheme(this.settings.appearance);
 
-    if (appState.weatherData) {
+    if (appState.weatherData && appState.currentScreen === "weatherView") {
       renderWeather(
         appState.weatherData,
         this.settings,
@@ -50,8 +50,25 @@ class SettingsController {
   setAppearance(value) {
     this.updateSetting("appearance", value);
   }
-}
 
+  bindSettingsUI() {
+    const bindings = [
+      { name: "temperature-unit", handler: this.setTempUnit.bind(this) },
+      { name: "wind-unit", handler: this.setWindspeedUnit.bind(this) },
+      { name: "pressure-unit", handler: this.setPressureUnit.bind(this) },
+      { name: "time-format", handler: this.setTimeFormat.bind(this) },
+      { name: "theme-mode", handler: this.setAppearance.bind(this) },
+    ];
+
+    bindings.forEach(({ name, handler }) => {
+      document.querySelectorAll(`input[name="${name}"]`).forEach((input) => {
+        input.addEventListener("change", (e) => {
+          handler(e.target.value);
+        });
+      });
+    });
+  }
+}
 const settingsController = new SettingsController();
 
 export default settingsController;

@@ -8,7 +8,11 @@ import { renderWeather } from "./renderer";
 import { getWeather } from "./api";
 import { loadCurrentCity, loadCities } from "../storage";
 import { initSearch } from "./searchController";
-import { bindNavBar } from "./screenController";
+import {
+  bindForecastStrip,
+  bindNavBar,
+  bindOverviewPanel,
+} from "./screenController";
 import { appState } from "./state";
 import settingsController from "../settings/settingsController";
 
@@ -31,6 +35,9 @@ async function init() {
       appState.selectedDayIndex,
     );
     bindNavBar();
+    initializeApp();
+    bindForecastStrip();
+    bindOverviewPanel();
   }
 }
 
