@@ -1,52 +1,30 @@
-:root[data-theme="light"] {
-  --bg: #f8fafc;
-  --text: #111827;
-  --card: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
-}
-
-:root[data-theme="dark"] {
-  --bg: rgba(17, 24, 39, 0.72);
-  --text: #f3f4f6;
-  --card: #1f2937;
-  --border: rgba(255, 255, 255, 0.1);
-}
-
-#weather {
-  width: 100dvw;
-  height: 100dvh;
-  overflow: hidden;
-}
-
 #settingsView {
-  width: 100dvw;
-  height: 100dvh;
+  width: 100%;
+  min-height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background:
-    radial-gradient(circle at top, rgba(60, 110, 255, 0.18), transparent 30%),
-    linear-gradient(180deg, #0b1020 0%, #111827 100%);
-  color: #f3f4f6;
-  box-sizing: border-box;
+  background: var(--bg-main);
+  color: var(--text-main);
 }
 
 .screen-header {
   flex-shrink: 0;
-  padding: 48px 24px 20px;
+  padding: 48px 20px 20px;
 }
 
 .screen-title {
-  margin: 0;
   font-size: 2rem;
-  font-weight: 500;
-  letter-spacing: -0.03em;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1;
 }
 
 .screen-subtitle {
-  margin: 0.35rem 0 0;
+  margin-top: 0.45rem;
   font-size: 0.95rem;
-  color: rgba(243, 244, 246, 0.65);
+  line-height: 1.35;
+  opacity: 0.72;
 }
 
 .settings-content {
@@ -71,25 +49,25 @@
 }
 
 .section-title {
-  margin: 0;
   padding-left: 0.15rem;
   font-size: 0.9rem;
-  font-weight: 500;
-  color: rgba(243, 244, 246, 0.78);
+  font-weight: 600;
+  line-height: 1.2;
+  opacity: 0.8;
 }
 
 .settings-card {
   padding: 0.55rem;
-  border-radius: 1.1rem;
-  background: rgba(17, 24, 39, 0.72);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  border-radius: 20px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .segmented-control {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   gap: 0.45rem;
   width: 100%;
 }
@@ -98,7 +76,7 @@
   position: relative;
   flex: 1;
   display: flex;
-  cursor: pointer;
+  min-width: 0;
 }
 
 .segmented-input {
@@ -109,43 +87,39 @@
 
 .segmented-text {
   width: 100%;
-  padding: 0.65rem 0.5rem;
+  padding: 0.72rem 0.45rem;
   border-radius: 999px;
   text-align: center;
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
-  color: rgba(243, 244, 246, 0.68);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--btn-bg);
+  color: var(--text-main);
+  border: 1px solid transparent;
+  opacity: 0.72;
   transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    opacity 0.18s ease,
+    border-color 0.18s ease,
+    background 0.18s ease;
 }
 
 .segmented-input:checked + .segmented-text {
-  color: white;
-  background: linear-gradient(180deg, #49a3ff 0%, #2488ff 100%);
-  border-color: rgba(73, 163, 255, 0.9);
-  box-shadow:
-    0 0 0 1px rgba(73, 163, 255, 0.18),
-    0 8px 18px rgba(36, 136, 255, 0.28);
+  opacity: 1;
+  border-color: var(--input-border);
+  background: var(--input-bg);
 }
 
-.segmented-option:active .segmented-text {
-  transform: scale(0.98);
+#settingsView .nav-bar {
+  justify-content: space-between;
 }
 
-@media (max-width: 420px) {
-  .screen-title {
-    font-size: 1.8rem;
-  }
+:root[data-theme="light"] .segmented-input:checked + .segmented-text {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(8, 47, 73, 0.15);
+  opacity: 1;
+}
 
-  .segmented-text {
-    padding: 0.6rem 0.35rem;
-    font-size: 0.76rem;
-  }
+:root[data-theme="light"] .segmented-text {
+  opacity: 0.5;
 }

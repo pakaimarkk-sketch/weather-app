@@ -1,15 +1,22 @@
 import "./weather.css";
+
 import "../settings/settings.css";
+
+import clearDayFilledStatic from "../assets/icons/meteocons-filled-static/clear-day.svg";
+
 import {
   createDiv,
   createEl,
-  createTextDiv,
   createTextElement,
   createButton,
   createInput,
+  createImg,
 } from "../../utils/domHelpers";
+
 import { initSwipe } from "../swipeController";
+
 import { appState } from "./state";
+
 import settingsController from "../settings/settingsController";
 
 function getFormattedDate() {
@@ -27,19 +34,18 @@ export function createWeatherLayout() {
   const panelOverview = createDiv(null, "panel", "panel-overview");
   const date = createTextElement("p", getFormattedDate(), null, "header-date");
   const city = createTextElement("p", "—", null, "header-city");
+  const clockEl = createTextElement("p", "—", null, "overview-clock");
   const main = createDiv(null, "overview-main");
   const condition = createTextElement("p", "—", null, "weather-condition");
-  // const description = createTextElement("p", "—", null, "weather-description");
   const temp = createTextElement("p", "—°", null, "weather-temp");
-  const icon = createTextDiv("🌤️", null, "weather-icon");
-  // const feelsLike = createTextElement("p", "—", null, "weather-feelslike");
+  const icon = createImg("", "Weather icon", null, "weather-icon");
   const humidity = createTextElement("p", "—", null, "weather-humidity");
   const windspeed = createTextElement("p", "—", null, "weather-windspeed");
 
   const header = createDiv(null, "overview-header");
   const forecast = createDiv(null, "forecast-strip");
 
-  header.append(date, city);
+  header.append(date, city, clockEl);
   main.append(icon, condition, temp, humidity, windspeed);
   panelOverview.append(header, main, forecast);
 
@@ -183,6 +189,28 @@ export function createSettingsLayout() {
           { label: "Dark", value: "Dark" },
         ],
         settings.appearance,
+      ),
+    ]),
+
+    createSettingsGroup("Icon Style", [
+      createSegmentedControl(
+        "icon-style",
+        [
+          { label: "Filled", value: "filled" },
+          { label: "Line", value: "line" },
+        ],
+        settings.iconStyle,
+      ),
+    ]),
+
+    createSettingsGroup("Icon Animation", [
+      createSegmentedControl(
+        "icon-animation",
+        [
+          { label: "Animated", value: "true" },
+          { label: "Static", value: "false" },
+        ],
+        String(settings.iconAnimated),
       ),
     ]),
   );

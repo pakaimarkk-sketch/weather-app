@@ -37,6 +37,10 @@ export default {
           fullySpecified: false,
         },
       },
+      {
+        test: /\.svg$/i,
+        type: "asset/resource",
+      },
     ],
   },
 };

@@ -11,7 +11,10 @@ import { initSearch } from "./searchController";
 const views = {
   searchView: {
     create: () => createSearchLayout(),
-    bind: () => initSearch(),
+    bind: () => {
+      initSearch();
+      bindNavBar();
+    },
     render: () => {},
   },
   weatherView: {
