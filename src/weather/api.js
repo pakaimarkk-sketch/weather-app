@@ -14,6 +14,8 @@ function normalizeWeatherData(data) {
       windspeed: data.currentConditions.windspeed,
       conditions: data.currentConditions.conditions,
       icon: data.currentConditions.icon,
+      datetime: data.currentConditions.datetime,
+      timezone: data.timezone,
     },
 
     details: data.days.map((day) => ({
@@ -48,6 +50,7 @@ function normalizeWeatherData(data) {
       tempmax: day.tempmax,
       tempmin: day.tempmin,
       precipprob: day.precipprob,
+      windspeed: day.windspeed,
     })),
   };
 }
