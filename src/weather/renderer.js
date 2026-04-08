@@ -6,12 +6,18 @@ import {
 
 import { formatHour } from "../../utils/utils";
 
+import { createImg } from "../../utils/domHelpers";
+
 import {
   formatTemperature,
   formatWindSpeed,
   formatPressure,
   formatTime,
 } from "../settings/settings";
+
+import { startClock } from "./time";
+
+import { getWeatherIcon } from "./iconMap";
 
 export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
   if (!weatherData) return;
@@ -23,11 +29,12 @@ export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
   renderPreview(weatherData.current, weatherData.city, settings);
   renderForecast(forecast, settings, selectedDayIndex);
   renderHourlyForecast(selectedDay.hours, settings, isToday);
-  renderDetails(selectedDay, weatherData.city, settings);
+  renderDetails(selectedDay, weatherData.current, weatherData.city, settings);
 }
 
 function renderPreview(current, city, settings) {
   document.querySelector(".header-city").textContent = city;
+  startClock(current.timezone);
   document.querySelector(".weather-condition").textContent = current.conditions;
   document.querySelector(".weather-temp").textContent = formatTemperature(
     current.temp,
@@ -38,6 +45,12 @@ function renderPreview(current, city, settings) {
 
   document.querySelector(".weather-windspeed").textContent =
     `Wind ${formatWindSpeed(current.windspeed, settings.windspeedUnit)}`;
+  document.querySelector(".weather-icon").src = getWeatherIcon(
+    current.icon,
+    settings,
+  );
+  document.querySelector(".weather-icon").alt =
+    current.conditions || current.icon || "Weather icon";
 }
 
 function renderForecast(forecast, settings, selectedDayIndex) {
@@ -54,6 +67,13 @@ function renderForecast(forecast, settings, selectedDayIndex) {
 
     dayEl.dataset.index = detailIndex;
 
+    const date = createTextElement(
+      "p",
+      getDayDate(day.datetime),
+      null,
+      "forecast-day-name",
+    );
+
     const name = createTextElement(
       "p",
       getDayName(day.datetime),
@@ -61,7 +81,12 @@ function renderForecast(forecast, settings, selectedDayIndex) {
       "forecast-day-name",
     );
 
-    const icon = createTextDiv("🌤️", null, "forecast-day-icon");
+    const icon = createImg(
+      getWeatherIcon(day.icon, settings),
+      day.conditions || day.icon || "Forecast icon",
+      null,
+      "forecast-day-icon",
+    );
 
     const temp = createTextElement(
       "p",
@@ -77,12 +102,12 @@ function renderForecast(forecast, settings, selectedDayIndex) {
       "forecast-day-precip",
     );
 
-    dayEl.append(name, icon, temp, precip);
+    dayEl.append(date, name, icon, temp, precip);
     strip.append(dayEl);
   });
 }
 
-function renderDetails(day, city, settings) {
+function renderDetails(day, current, city, settings) {
   document.querySelector(".detail-city").textContent = city;
   document.querySelector(".detail-date").textContent = formatHeaderDate(
     day.datetime,
@@ -90,28 +115,29 @@ function renderDetails(day, city, settings) {
 
   const rows = [
     {
-      label: "Temperature",
+      label: "Description",
+      value: day.description,
+    },
+    {
+      label: "Daily average temperature",
       value: formatTemperature(day.temp, settings.tempUnit),
     },
     {
-      label: "Feels like",
-      value: formatTemperature(day.feelslike, settings.tempUnit),
+      label: "Min",
+      value: formatTemperature(day.tempmin, settings.tempUnit),
     },
     {
       label: "Feels like min",
       value: formatTemperature(day.feelslikemin, settings.tempUnit),
     },
     {
+      label: "Max",
+      value: formatTemperature(day.tempmax, settings.tempUnit),
+    },
+
+    {
       label: "Feels like max",
       value: formatTemperature(day.feelslikemax, settings.tempUnit),
-    },
-    {
-      label: "Humidity",
-      value: `${day.humidity}%`,
-    },
-    {
-      label: "Wind",
-      value: formatWindSpeed(day.windspeed, settings.windspeedUnit),
     },
     {
       label: "Pressure",
@@ -124,14 +150,6 @@ function renderDetails(day, city, settings) {
     {
       label: "Sunset",
       value: formatTime(day.sunset, settings.timeFormat),
-    },
-    {
-      label: "Rain chance",
-      value: `${day.precipprob ?? 0}%`,
-    },
-    {
-      label: "Description",
-      value: day.description,
     },
   ];
 
@@ -147,6 +165,15 @@ function renderDetails(day, city, settings) {
   });
 }
 
+function getDayDate(dateString) {
+  const date = new Date(dateString);
+
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${month}.${day}`;
+}
+
 function getDayName(dateString) {
   return new Date(dateString).toLocaleDateString("en-US", { weekday: "short" });
 }
@@ -159,7 +186,7 @@ function formatHeaderDate(dateString) {
   });
 }
 
-function renderHourlyForecast(hours = [], settings, shouldAutoScroll = false) {
+function renderHourlyForecast(hours = [], settings) {
   const strip = document.querySelector(".hourly-forecast-strip");
   if (!strip) return;
 
@@ -180,7 +207,12 @@ function renderHourlyForecast(hours = [], settings, shouldAutoScroll = false) {
       "hourly-time",
     );
 
-    const icon = createTextDiv("🌤️", null, "hourly-icon");
+    const icon = createImg(
+      getWeatherIcon(hour.icon, settings),
+      hour.conditions || hour.icon || "Hourly icon",
+      null,
+      "hourly-icon",
+    );
 
     const temp = createTextElement(
       "p",
@@ -212,36 +244,5 @@ function renderHourlyForecast(hours = [], settings, shouldAutoScroll = false) {
 
     hourEl.append(time, icon, temp, humidity, wind, precip);
     strip.append(hourEl);
-  });
-
-  if (shouldAutoScroll) {
-    scrollHourlyStripToCurrentTime(strip, filteredHours);
-  } else {
-    strip.scrollLeft = 0;
-  }
-}
-
-function scrollHourlyStripToCurrentTime(strip, hours) {
-  const currentHour = new Date().getHours();
-  const snappedHour = currentHour - (currentHour % 2);
-
-  const foundIndex = hours.findIndex(
-    (hour) => Number(hour.datetime.split(":")[0]) === snappedHour,
-  );
-
-  const targetIndex = Math.max(0, foundIndex - 4);
-
-  const items = strip.querySelectorAll(".hourly-forecast-item");
-  const targetItem = items[targetIndex];
-
-  if (!targetItem) return;
-
-  strip.scrollLeft = targetItem.offsetLeft;
-  console.log({
-    currentHour,
-    snappedHour,
-    renderedHours: hours.map((h) => h.datetime),
-    foundIndex,
-    targetIndex,
   });
 }

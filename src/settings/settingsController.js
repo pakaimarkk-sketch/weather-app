@@ -51,6 +51,14 @@ class SettingsController {
     this.updateSetting("appearance", value);
   }
 
+  setIconStyle(value) {
+    this.updateSetting("iconStyle", value);
+  }
+
+  setIconAnimated(value) {
+    this.updateSetting("iconAnimated", value === "true");
+  }
+
   bindSettingsUI() {
     const bindings = [
       { name: "temperature-unit", handler: this.setTempUnit.bind(this) },
@@ -58,6 +66,8 @@ class SettingsController {
       { name: "pressure-unit", handler: this.setPressureUnit.bind(this) },
       { name: "time-format", handler: this.setTimeFormat.bind(this) },
       { name: "theme-mode", handler: this.setAppearance.bind(this) },
+      { name: "icon-style", handler: this.setIconStyle.bind(this) },
+      { name: "icon-animation", handler: this.setIconAnimated.bind(this) },
     ];
 
     bindings.forEach(({ name, handler }) => {

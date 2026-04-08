@@ -4,6 +4,8 @@ export const defaultSettings = {
   pressureUnit: "hPa",
   timeFormat: "24h",
   appearance: "Dark",
+  iconStyle: "filled",
+  iconAnimated: true,
 };
 
 export function formatTemperature(value, unit) {
