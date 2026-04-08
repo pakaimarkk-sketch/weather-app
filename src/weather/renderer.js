@@ -1,23 +1,16 @@
-import {
-  createDiv,
-  createTextElement,
-  createTextDiv,
-} from "../../utils/domHelpers";
+import { createDiv, createTextElement } from "../../utils/domHelpers";
 
 import { formatHour } from "../../utils/utils";
 
 import { createImg } from "../../utils/domHelpers";
 
-import {
-  formatTemperature,
-  formatWindSpeed,
-  formatPressure,
-  formatTime,
-} from "../settings/settings";
+import { formatTemperature, formatWindSpeed } from "../settings/settings";
 
 import { startClock } from "./time";
 
 import { getWeatherIcon } from "./iconMap";
+
+import { iconSets } from "./iconMap";
 
 export function renderWeather(weatherData, settings, selectedDayIndex = 0) {
   if (!weatherData) return;
@@ -115,52 +108,66 @@ function renderDetails(day, current, city, settings) {
 
   const rows = [
     {
-      label: "Description",
-      value: day.description,
-    },
-    {
+      icon: "thermometer",
       label: "Daily average temperature",
       value: formatTemperature(day.temp, settings.tempUnit),
     },
     {
+      icon: "thermometer-colder",
       label: "Min",
       value: formatTemperature(day.tempmin, settings.tempUnit),
     },
     {
+      icon: "thermometer-colder",
       label: "Feels like min",
       value: formatTemperature(day.feelslikemin, settings.tempUnit),
     },
     {
+      icon: "thermometer-warmer",
       label: "Max",
       value: formatTemperature(day.tempmax, settings.tempUnit),
     },
-
     {
+      icon: "thermometer-warmer",
       label: "Feels like max",
       value: formatTemperature(day.feelslikemax, settings.tempUnit),
     },
     {
-      label: "Pressure",
-      value: formatPressure(day.pressure, settings.pressureUnit),
+      icon: "humidity",
+      label: "Humidity",
+      value: `${day.humidity}%`,
     },
     {
-      label: "Sunrise",
-      value: formatTime(day.sunrise, settings.timeFormat),
+      icon: "windsock",
+      label: "Wind",
+      value: formatWindSpeed(day.windspeed, settings.windspeedUnit),
     },
     {
-      label: "Sunset",
-      value: formatTime(day.sunset, settings.timeFormat),
+      icon: "raindrop",
+      label: "Rain chance",
+      value: `${day.precipprob ?? 0}%`,
     },
   ];
 
   const detailRows = document.querySelector(".detail-rows");
   detailRows.textContent = "";
 
-  rows.forEach(({ label, value }) => {
+  rows.forEach(({ label, icon, value }) => {
     const row = createDiv(null, "detail-row");
+
+    const left = createDiv(null, "detail-left");
+    const iconEl = createImg(
+      getWeatherIcon(icon, settings),
+      label,
+      null,
+      "detail-icon",
+    );
     const labelEl = createTextElement("p", label, null, "detail-label");
+
     const valueEl = createTextElement("p", value, null, "detail-value");
-    row.append(labelEl, valueEl);
+
+    left.append(iconEl, labelEl);
+    row.append(left, valueEl);
     detailRows.append(row);
   });
 }

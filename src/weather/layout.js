@@ -2,6 +2,8 @@ import "./weather.css";
 
 import "../settings/settings.css";
 
+import clearDayFilledStatic from "../assets/icons/meteocons-filled-static/clear-day.svg";
+
 import {
   createDiv,
   createEl,
