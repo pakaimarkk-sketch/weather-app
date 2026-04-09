@@ -1,11 +1,53 @@
+:root[data-theme="light"] .segmented-input:checked + .segmented-text {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 8px rgba(8, 47, 73, 0.15);
+  opacity: 1;
+}
+
+:root[data-theme="light"] .segmented-text {
+  opacity: 0.5;
+}
+
 #settingsView {
   width: 100%;
-  min-height: 100dvh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   background: var(--bg-main);
   color: var(--text-main);
+  position: relative;
+}
+
+.screen-header {
+  flex-shrink: 0;
+  padding: 48px 20px 20px;
+}
+
+.settings-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0 16px calc(16px + 80px);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.settings-content::-webkit-scrollbar {
+  display: none;
+}
+
+#settingsView .nav-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  justify-content: space-between;
 }
 
 .screen-header {
@@ -31,11 +73,14 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 0 16px 16px;
+  padding: 0 16px 90px;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .settings-content::-webkit-scrollbar {
@@ -110,16 +155,10 @@
 }
 
 #settingsView .nav-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
   justify-content: space-between;
-}
-
-:root[data-theme="light"] .segmented-input:checked + .segmented-text {
-  background: rgba(255, 255, 255, 0.75);
-  border-color: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 2px 8px rgba(8, 47, 73, 0.15);
-  opacity: 1;
-}
-
-:root[data-theme="light"] .segmented-text {
-  opacity: 0.5;
 }
